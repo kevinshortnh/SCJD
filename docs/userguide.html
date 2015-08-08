@@ -1,0 +1,541 @@
+<html>
+  <head>
+    <title>
+
+      User Guide for Bodgitt and Scarper, LLC Customer Service Representative
+      Application
+
+    </title>
+    <style>
+
+      body {
+        font-family: 'Chiller';
+        }
+
+      p, .list {
+        margin: 1ex 2em 1ex 2em;
+        font-family: serif;
+        font-weight: normal;
+        font-size: 12pt;
+        line-height: 14pt;
+        }
+
+      pre {
+        margin: 1ex 4em 1ex 4em;
+        font-family: monospace;
+        font-weight: normal;
+        font-size: 10pt;
+        line-height: 12pt;
+        }
+
+      code {
+        font-family: monospace;
+        font-weight: normal;
+        font-size: 10pt;
+        line-height: 12pt;
+        }
+
+      .image {
+        margin: 2ex 4em 2ex 4em;
+        }
+
+      .title {
+        margin: 4ex 0em 2ex 0em;
+        font-family: sans-serif;
+        font-weight: bold;
+        font-size: 14pt;
+        line-height: 16pt;
+        text-align: center;
+        }
+
+      .subtitle {
+        margin: 2ex 0em 2ex 0em;
+        font-family: sans-serif;
+        font-style: italic;
+        font-size: 12pt;
+        line-height: 14pt;
+        text-align: center;
+        }
+
+      .header1 {
+        margin: 4ex 0em 2ex 0em;
+        font-family: sans-serif;
+        font-weight: bold;
+        font-size: 12pt;
+        line-height: 14pt;
+        }
+
+      .header2 {
+        margin: 4ex 0em 2ex 0em;
+        font-family: sans-serif;
+        font-weight: normal;
+        font-size: 12pt;
+        line-height: 14pt;
+        }
+
+    </style>
+  </head>
+  <body>
+    <div class="title">
+
+      User Guide<br/>
+      for<br/>
+      Bodgitt and Scarper, LLC<br/>
+      Customer Service Representative Application
+
+    </div>
+    <div class="subtitle">
+
+      Sun Certified Developer for the Java 2 Platform: Application Submission
+      (Version 2.1.1)
+
+    </div>
+    <div class="subtitle">
+
+      Copyright &copy; 2004 Bodgitt and Scarper, LLC. All Rights Reserved.
+
+    </div>
+    <hr/>
+    <div class="header1">
+
+      INTRODUCTION
+
+    </div>
+    <p>
+
+      This application allows the Customer Service Representatives (CSRs) of
+      Bodgitt and Scarper, LLC., a broker of home improvement contractors, to
+      generate a list of contractors that match a customer's criteria.
+
+    </p>
+    <p>
+
+      The application can be run in single-user (standalone) or multi-user
+      (networked) mode. The multi-user mode uses a single "server" machine and
+      one or more "client" machines.
+
+    </p>
+    <div class="header1">
+
+      AUDIENCE
+
+    </div>
+    <p>
+
+      These guidelines are provided for network administrators and users who
+      are already familiar with the broad purpose of the project.
+
+    </p>
+    <div class="header1">
+
+      ASSUMPTIONS
+
+    </div>
+    <p>
+
+      These guidelines assume that a Java 2 Runtime Environment is already
+      installed and all commands will be started from a Windows or UNIX/Linux
+      shell command line.
+
+    </p>
+    <div class="header1">
+
+      SERVER OPERATION
+
+    </div>
+    <p>
+
+      Start the server from the directory where the database resides, using the following command line:
+
+    </p>
+    <pre>
+java -jar runme.jar server
+    </pre>
+    <p>
+
+      (If the <code>runme.jar</code> file is not located in the current
+      directory, supply the full or relative path to the jar file.)
+
+    </p>
+    <p>
+
+      The server will normally produce output like the following:
+
+    </p>
+    <pre>
+Apr 28, 2004 2:25:16 PM suncertify.protocol.server.SubcontractorCommandServer server
+INFO: rmi://192.168.0.101:1099/SCJD-Subcontractor registered.
+    </pre>
+    <p>
+
+      The server will run and handle requests until it is manually stopped.
+
+      To stop the server, simply type <code>&lt;control-c&gt;</code>.
+
+    <p>
+
+      If another instance of the server is already running, the new server will
+      produce error output like the following and then exit:
+
+    </p>
+    <pre>
+Apr 28, 2004 2:55:58 PM suncertify.protocol.server.SubcontractorCommandServer server
+SEVERE: Exiting -- java.rmi.AlreadyBoundException: rmi://192.168.0.101:1099/SCJD-Subcontractor
+    </pre>
+    <p>
+
+      If a non-JRMP server is already listening at the standard (1099) port,
+      the new server will product error output like the following and then exit:
+
+    </p>
+    <pre>
+Apr 28, 2004 2:12:20 PM suncertify.protocol.server.SubcontractorCommandServer server
+SEVERE: Exiting -- java.rmi.ConnectIOException: non-JRMP server at remote endpoint
+    </pre>
+    <p>
+
+      If these (or other) errors occur, please consult your network administrator for help.
+
+    </p>
+    <div class="header1">
+
+      REMOTE CLIENT START-UP
+
+    </div>
+    <p>
+
+      Start the Graphical User Interface (GUI) client in "remote" mode using
+      the following command line:
+
+    </p>
+    <pre>
+java -jar runme.jar
+    </pre>
+    <p>
+
+      (If the <code>runme.jar</code> file is not located in the current
+      directory, supply the full or relative path to the jar file.)
+
+    </p>
+    <div class="list">
+      <ul>
+        <li>
+
+          If the GUI client has been connected to a remote server in the past
+          and the server is running, the GUI table will automatically be filled
+          with Subcontractors to choose from.
+
+        </li>
+        <li>
+
+          If this is the first time you have run the GUI in "remote" mode, the
+          table will be empty.
+
+        </li>
+        <li>
+
+          If you have run the GUI in "remote" mode but the server is not
+          running, you will see an error dialog window indicating that the
+          server is not available. Simply press "OK". The table will be empty.
+          You will now be able to select another server.
+
+        </li>
+      </ul>
+    </div>
+    </p>
+    <div class="header1">
+
+      LOCAL CLIENT START-UP
+
+    </div>
+    <p>
+
+      Start the GUI client in "standalone" mode using the following command line:
+
+    </p>
+    <pre>
+java -jar runme.jar alone
+    </pre>
+    <p>
+
+      (If the <code>runme.jar</code> file is not located in the current
+      directory, supply the full or relative path to the jar file.)
+
+    </p>
+    <div class="list">
+      <ul>
+        <li>
+
+          If the GUI client has been connected to a local database in the past,
+          the GUI table will automatically be filled with Subcontractors to
+          choose from.
+
+        </li>
+        <li>
+
+          If this is the first time you have run the GUI in "standalone" mode,
+          the table will be empty.
+
+        </li>
+      </ul>
+    </div>
+    <div class="header1">
+
+      GUI CLIENT OPERATION
+
+    </div>
+    <div class="header2">
+
+      Introduction
+
+    </div>
+    <p>
+
+      When the table contains Subcontractors  and you have selected a
+      Subcontractor, the window looks like this:
+
+    </p>
+    <div class="image">
+
+      <img src="images/csrgui_selected.jpg" />
+
+    </div>
+    <div class="list">
+      <ul>
+        <li>
+
+          The "Search for Matching Subcontractors" button is enabled when the
+          table contains Subcontractors and is disabled when the table is
+          empty.
+
+        </li>
+        <li>
+
+          The "Book Selected Subcontractor" button is enabled when you have
+          selected a Subcontractor (row) and disabled when no Subcontractors
+          are selected.
+
+        </li>
+        <li>
+
+          You can operate the horizontal and vertical scroll bars to view the
+          hidden portions of the table.
+
+        </li>
+        <li>
+
+          You can rearrange the columns by "dragging and dropping" the column
+          headings. 
+          
+          (Note: The columns will return to their default sequence each time
+          you perform a search.)
+
+        </li>
+        <li>
+
+          The bottom line in the window displays the status of the most recent
+          operation you performed.
+
+        </li>
+      </ul>
+    </div>
+    <div class="header2">
+
+      Selecting a Local Database
+
+    </div>
+    <p>
+
+      To select a local database, access the "File > Use Local Database" menu item.
+
+      Then select a file from the chooser dialog window:
+
+    </p>
+    <div class="image">
+
+      <img src="images/csrgui_filechooser.jpg" />
+
+    </div>
+    <p>
+
+      If the database filename is valid, the table will be loaded with
+      Subcontractors to choose from.
+
+    </p>
+    <p>
+
+      If the database filename is not valid or you chose a file that is not a
+      valid database, you will get an error dialog window like the following:
+
+    </p>
+    <div class="image">
+
+      <img src="images/csrgui_file_error.jpg" />
+
+    </div>
+    <div class="header2">
+
+      Selecting a Remote Server
+
+    </div>
+    <p>
+
+      To select a remote server, access the "File > Connect To Server" menu item.
+
+      Then enter the IP address or hostname of the system (that is running the
+      server) in the dialog window:
+
+    </p>
+    <div class="image">
+
+      <img src="images/csrgui_server.jpg" />
+
+    </div>
+    <p>
+
+      If the system name is valid and the server is running, the table will
+      be loaded with Subcontractors to choose from.
+
+    </p>
+    <p>
+
+      If the server is not running on the system you specified, you will get an
+      error dialog window like the following:
+
+    </p>
+    <div class="image">
+
+      <img src="images/csrgui_server_error.jpg" />
+
+    </div>
+    <div class="header2">
+
+      Searching for Matching Subcontractors
+
+    </div>
+    <p>
+
+      You can fill in the "Subcontractor Name" and/or "City" fields with the
+      first few characters of the name of a subcontractor or city, then press
+      the "Search for Matching Subcontractors" button, to narrow you search for
+      subcontractors.
+
+    </p>
+    <div class="list">
+      <ul>
+        <li>
+
+          Uppercase and lowercase are ignored during searches.
+
+        </li>
+        <li>
+
+          Example: match string "rem" matches <i>"Remodelers"</i>, <i>"REM
+          Builders"</i> and <i>"Remy, Inc."</i> but not <i>"Rebuilt"</i>.
+
+        </li>
+      </ul>
+    </div>
+    <div class="header2">
+
+      Sorting the Table
+
+    </div>
+    <p>
+
+      You can click on any column heading in the table, to sort the entire table by that column.
+      
+      When you click the column heading more than once, the sort changes
+      between ascending and descending order.
+
+    </p>
+    <div class="header2">
+
+      Booking a Subcontractor
+
+    </div>
+    <p>
+
+      Click on a row in the table to select a Subcontractor, then click the
+      "Book Selected Subcontractor" button to book the selected Subcontractor.
+      
+      The following dialog window will be displayed. Enter the one to eight
+      digit Customer Id and press "OK":
+
+    </p>
+    <div class="image">
+
+      <img src="images/csrgui_book.jpg" />
+
+    </div>
+    <p>
+
+      It is possible that another CSR already booked the same Subcontractor you
+      selected, between the time you selected the Subcontractor and tried to
+      book it.
+
+      When this happens, you will see an error dialog window like the following:
+
+    </p>
+    <div class="image">
+
+      <img src="images/csrgui_book_error.jpg" />
+
+    </div>
+    <p>
+
+      Instead, you will need to select another Subcontractor.
+
+    </p>
+    <div class="header2">
+
+      Displaying the User Guide
+
+    </div>
+    <p>
+
+      Access the "Help > User Guide" menu item to display the following window,
+      that simply refers you to the document you are currently reading:
+
+    </p>
+    <div class="image">
+
+      <img src="images/csrgui_userguide.jpg" />
+
+    </div>
+    <div class="header2">
+
+      Displaying the "About" Window
+
+    </div>
+    <p>
+
+      Access the "Help > About" menu item to display the following window,
+      that provides information about the application and its version number:
+
+    </p>
+    <div class="image">
+
+      <img src="images/csrgui_about.jpg" />
+
+    </div>
+    <div class="header2">
+
+      Exiting the GUI Client
+
+    </div>
+    <p>
+
+      Access the "File > Exit" menu item to exit the application.
+
+      You will see the following confirmation window:
+
+    </p>
+    <div class="image">
+
+      <img src="images/csrgui_exit.jpg" />
+
+    </div>
+    <hr/>
+  </body>
+</html>

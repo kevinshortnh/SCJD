@@ -1,0 +1,4 @@
+The exact version of the JDK I used was "1.4.2_04-b05".
+
+The development platform I worked on was Cygwin on Microsoft Windows XP
+Professional.  I tested the client and server on XP and on RedHat Linux.

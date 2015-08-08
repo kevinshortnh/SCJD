@@ -1,0 +1,248 @@
+Design choices for the "Sun Certified Developer for the Java 2 Platform:
+Application Submission (Version 2.1.1)
+------------------------------------------------------------------------
+
+
+Package "subcertify.db"
+
+    Files
+
+        DB.java
+        Data.java
+
+        CreateFailedException.java
+        DuplicateKeyException.java
+        DuplicateKeyOnUpdateException.java
+        IOExceptionOnDeleteException.java
+        IOExceptionOnUpdateException.java
+        InvalidDataHeaderException.java
+        InvalidMagicCookieException.java
+        RecordNotFoundException.java
+
+    DB Interface
+
+        I made no changes to the DB interface. However, I made formatting
+        changes so it would conform to the Java Coding Standards and Javadoc
+        guidelines.
+
+    Data Class
+
+        Discussion:
+        -----------
+
+        The existing database implementation is a small, simple, flat file.
+        Expectations for the system are that it will be an interim step toward
+        migrating the system to the web.
+
+        Implementation Choices:
+        -----------------------
+
+        For my implementation, the entire database is read into memory, kept in
+        memory for searches and written to disk as necessary. These are
+        reasonable choices, as (a) the in-memory footprint of the database is
+        rather small, (b) the project specification states at most one program
+        is accessing the data file, and (c) it keeps the locking mechanism
+        simple.
+
+        I used DataInputStream objects for reading the database, as the
+        specification states the fields are stored in the formats of the
+        DataInputStream and DataOutputStream classes.
+
+        I used RandomAccessFile objects for writing the database, to update
+        records in place.
+
+        My Data class makes no assumptions about the database schema; it is
+        only aware of the general data file format stated in the specification.
+        (Knowledge of the database schema appears in my
+        SubcoontractorCommandImpl class.)
+
+        Locking:
+        --------
+
+        The specification stated that "any attempt to lock a resource that is
+        already locked should cause the current thread to give up the CPU,
+        consuming no CPU cycles until the desired resource becomes available."
+
+        I understood this to mean that locking should be on a per-record level,
+        and that notify() -- not notifyAll() -- should be the method used for
+        notifying blocked threads. So I maintain a List of locks for each data
+        record and notify only one thread waiting on that lock.
+
+    DuplicateKeyException Class
+    InvalidDataHeaderException Class
+    InvalidMagicCookieException Class
+    RecordNotFoundException Class
+
+        These classes extend Exception per the project specification.
+
+    CreateFailedException Class
+    DuplicateKeyOnUpdateException Class
+    IOExceptionOnDeleteException Class
+    IOExceptionOnUpdateException Class
+
+        These are additional exceptions I needed to declare, beyond those
+        specified by the DB interface.  These classes extend RuntimeException.
+        I chose to extend RuntimeException to avoid violating the DB interface
+        contract. Another choice (that I considered messy) would have been to
+        subclass one of the existing exception classes declared in the DB
+        interface. But subclassing should normally be performed for greater
+        specificity, rather than to work around a design shortcoming.
+
+
+Package "suncertify.protocol"
+
+    Files
+
+        Subcontractor.java
+        SubcontractorCommand.java
+        SubcontractorCommandImpl.java
+        SubcontractorImpl.java
+        SubcontractorNotAvailableException.java
+        SubcontractorNotFoundException.java
+
+    Subcontractor Interface
+
+        The interface for subcontractors is kept simple. It simply declares
+        methods for creating subcontractors, getting their fields, a simple
+        test to find out is a subcontractor is available, and a method for
+        setting the customer id.
+
+    SubcontractorImpl Class
+
+        The subcontractor implementation class has knowledge of business rules
+        concerning subcontractors; e.g., what the valid range of customer id
+        values is and how to detect whether a subcontractor has been booked.
+
+    SubcontractorCommand Interface
+
+        The interface for commands that operate on subcontractors is kept
+        simple. The user interface only requires methods to find() or book()
+        subcontractors, so those are all that are declared.
+
+    SubcontractorCommandImpl Class
+
+        The subcontractor command implementation class has (a) limited
+        knowledge of the database schema and (b) knowledge of the data record
+        locking requirements, sufficient to implement the required commands
+        using the DB interface.
+
+        This implementation class discovers the sequence of database fields by
+        requesting an array of FieldDescriptor objects and interrogating them.
+        This protects the implementation from some kinds of database changes.
+        For example, if the database fields are rearranged or new fields are
+        added, no changes are necessary. However, all the expected fields are
+        required.
+
+    SubcontractorNotAvailableException Class
+    SubcontractorNotFoundException Class
+
+        These classes extend Exception.
+
+
+Package "suncertify.protocol.server"
+
+    Files
+
+        SubcontractorCommandServer.java
+
+    SubcontractorCommandServer Class
+
+        This class implements the RMI server. RMI was an easy choice:
+        
+        (a) The subcontractor commands are executed entirely on either the
+        standalone machine or the server machine -- never on the networked
+        client machine. This provides atomicity for the commands. Specifically,
+        it avoids lock starvation that might otherwise occur if a client
+        obtained a lock and exited without releasing the lock. It was not
+        necessary to implement a lock starvation timeout mechansim, which would
+        otherwise be required to ensure a robust system. If the server machine
+        crashes (for other reasons, of course!) then all locks are lost anyway.
+
+        (b) It keeps the the client really simple.
+
+        (c) Handling RemoteException is much easier than inventing more network
+        code. Laziness is a virtue.
+
+
+Package "suncertify.protocol.client"
+
+    Files
+
+        SubcontractorCommandClient.java
+
+    SubcontractorCommandClient Class
+
+        This class is really simple. The remote() method simply looks up a
+        server in the RMI registry and returns a SubcontractorCommand. The
+        local() method simply creates a Data instance, gives it to a
+        SubcontractorCommandImpl constructor, and returns a
+        SubcontractorCommand. Very straighforward.
+
+Package "suncertify.app"
+
+    Files
+
+        CSR.java
+        CSRGUI.java
+        CSRGUIMouseAdapter.java
+        CSRGUIMouseMotionAdapter.java
+        CSRGUISelectionListener.java
+        SubcontratorTableModel.java
+
+    CSR Class
+
+        This is the "main" application class. It simply parses the command line
+        and invokes the appropriate methods.
+
+    CSRGUI Class
+
+        This class implements the Swing GUI.
+        
+        The project specification requires the use of a JTable. It also states
+        the GUI "must be composed exclusively with components from the Java
+        Foundation Classes (Swing components)." I understood this to mean that
+        Swing components were preferred over those in the Abstract Windowing
+        Toolkit (AWT). Therefore, I used the SpringLayout layout manager and
+        "J*" components for the user interface.
+
+        Some AWT classes could not be avoided: I used MouseAdapter, MouseEvent,
+        MouseMotionAdapter, ActionEvent and ActionListener for event handling.
+        I used Rectangle for determining whether events occurred within a
+        specified JTable column.  I used Container and Component with
+        SpringLayout.  I used Toolkit and Dimension for a user convenience
+        feature -- centering the application on the screen.
+
+        Note: It appears a JTable can have some problems if events are received
+        while the component is being initialized. (This looks like a Java 1.4
+        problem, as I could not get it to happen with the Java 1.5 Beta.) The
+        workaround is to click the header of the JTable, which causes it to
+        edraw itself correctly.
+
+    SubcontratorTableModel Class
+
+        This class extends the AbstractTableModel, providing the data "model"
+        and "view" updates of the MVC paradigm. (The "controller" is
+        essentially implementted in the JButton action listeners of the CSRGUI
+        class.)
+        
+        This class provides the moethods for populating the table with data
+        from the database and for rearranging and sorting the data in the
+        table.
+
+    CSRGUIMouseAdapter Class
+
+    CSRGUIMouseMotionAdapter Class
+
+    CSRGUISelectionListener Class
+
+@@
+GENERAL CONSIDERATIONS
+DOCUMENTATION
+    My source modules conform to the Sun Java Code Coventions.
+    My source modules contain Javadoc-style comments.
+    (I verified conformance using the Checkstyle tool and Eclipse plugon.)
+OBJECT-ORIENTED DESIGN
+USER INTERFACE
+LOCKING
+DATA CLASS
+SERVER
